@@ -1,0 +1,30 @@
+
+load('ext://git_resource', 'git_checkout')
+
+def new_test(name, cmd, allow_parallel=False, resource_deps=None):
+  return [{
+      'name': name,
+      'cmd': cmd,
+      'allow_parallel': allow_parallel,
+      'resource_deps': resource_deps,
+  }]
+
+def add_test(tests, name, cmd, allow_parallel=False, resource_deps=None):
+  tests.append({
+      'name': name,
+      'cmd': cmd,
+      'allow_parallel': allow_parallel,
+      'resource_deps': resource_deps,
+  })
+
+
+def run_tests(tests=[]):
+  for t in tests:
+    for k in ['name', 'cmd', 'allow_parallel', 'resource_deps']:
+      if k not in t:
+        fail("test definition missing key: %s" % k)
+    if t['resource_deps'] == None:
+      local_resource(t['name'], cmd=t['cmd'], allow_parallel=t['allow_parallel'])
+    else:
+      local_resource(t['name'], cmd=t['cmd'], allow_parallel=t['allow_parallel'], resource_deps=t['resource_deps'])
+
