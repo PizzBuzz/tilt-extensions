@@ -1,0 +1,16 @@
+
+def docker_build_multi(images={}):
+  for image in images:
+      for k in ['name', 'repo', 'context', 'dockerfile', 'keys']:
+          if k not in image:
+              fail("image definition missing key: %s" % k)
+
+      if image['repo'] == 'this' or image['repo'] == '.':
+          docker_build(image['name'],
+              context=image['context'],
+              dockerfile=image['dockerfile'])
+      else:
+          git_checkout(image['repo'], image['context'])
+          docker_build(image['name'],
+              context=image['context'],
+              dockerfile=image['dockerfile'])
