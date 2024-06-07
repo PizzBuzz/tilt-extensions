@@ -1,7 +1,28 @@
 
-def docker_build_multi(images={}):
+load('ext://git_resource', 'git_checkout')
+
+def new_image(name, repo, dockerfile, context = '.', keys=None):
+    return [{
+        'name': name,
+        'repo': repo,
+        'context': context,
+        'dockerfile': dockerfile,
+        'keys': keys
+    }]
+
+def add_image(images, name, repo, dockerfile, context = '.', keys=None):
+    images.append({
+        'name': name,
+        'repo': repo,
+        'context': context,
+        'dockerfile': dockerfile,
+        'keys': keys
+    })
+
+
+def docker_build_multi(images=[]):
   for image in images:
-      for k in ['name', 'repo', 'context', 'dockerfile', 'keys']:
+      for k in ['name', 'repo', 'context', 'dockerfile']:
           if k not in image:
               fail("image definition missing key: %s" % k)
 
@@ -14,3 +35,10 @@ def docker_build_multi(images={}):
           docker_build(image['name'],
               context=image['context'],
               dockerfile=image['dockerfile'])
+
+def image_names(images={}):
+    return [image['name'] for image in images]
+
+def image_keys(images={}):
+    return [image['keys'] for image in images]
+

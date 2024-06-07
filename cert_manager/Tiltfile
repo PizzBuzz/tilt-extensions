@@ -1,0 +1,14 @@
+
+load('ext://helm_resource', 'helm_resource', 'helm_repo')
+
+def cert_manager(version='v1.13.3', repo='https://charts.jetstack.io', chart_name='jetstack/cert-manager' namespace='cert-manager', release_name='cert-manager', resource_deps=[]):
+
+  helm_repo('jetstack', repo ,resource_name='cert-manager-repo')
+  update_settings ( k8s_upsert_timeout_secs=120 )
+  helm_resource('cert-manager', chart_name,
+      resource_deps= ['cert-manager-repo'] + resource_deps,
+      namespace=namespace
+      release_name=release_name
+      flags=['--version='+certmanager_version, '--set=installCRDs=true', '--create-namespace']
+      )
+  return {'resource_name': 'cert-manager', 'repo_resource_name': 'cert-manager-repo'}
